@@ -64,7 +64,12 @@ public class SingletonManager {
      * In this mode singletons are never disabled unless the mode is set back to CLIENT. The user
      * can do this by using util.CleanUp (an old API created for users).
      */
-    CONNECTOR
+    CONNECTOR,
+    /**
+     * In this mode singletons are permanently disabled and entering this mode prevents
+     * transitioning to other modes.
+     */
+    CLOSED
   }
 
   private static long reservations;
@@ -172,7 +177,7 @@ public class SingletonManager {
   }
 
   private static void transition() {
-    if (enabled && reservations == 0 && mode == Mode.CLIENT) {
+    if (mode == Mode.CLOSED || (mode == Mode.CLIENT && reservations == 0)) {
       for (SingletonService service : services) {
         disable(service);
       }
