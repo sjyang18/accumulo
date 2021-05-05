@@ -152,6 +152,10 @@ public class SingletonManager {
    * Change how singletons are managed. The default mode is {@link Mode#CLIENT}
    */
   public static synchronized void setMode(Mode mode) {
+    if (SingletonManager.mode == mode)
+      return;
+    if (SingletonManager.mode == Mode.CLOSED)
+      throw new IllegalStateException("Cannot leave closed mode once entered");
     if (SingletonManager.mode == Mode.CLIENT && mode == Mode.CONNECTOR) {
       if (transitionedFromClientToConnector) {
         throw new IllegalStateException("Can only transition from " + Mode.CLIENT + " to "
@@ -165,7 +169,7 @@ public class SingletonManager {
     }
 
     // do not change from server mode, its a terminal mode that can not be left once entered
-    if (SingletonManager.mode != Mode.SERVER) {
+    if (SingletonManager.mode != Mode.SERVER || mode == Mode.CLOSED) {
       SingletonManager.mode = mode;
     }
     transition();
@@ -177,7 +181,7 @@ public class SingletonManager {
   }
 
   private static void transition() {
-    if (mode == Mode.CLOSED || (mode == Mode.CLIENT && reservations == 0)) {
+    if (enabled && ((reservations == 0 && mode == Mode.CLIENT) || mode == Mode.CLOSED)) {
       for (SingletonService service : services) {
         disable(service);
       }
