@@ -205,6 +205,8 @@ public class DistributedWorkQueue {
           case NodeCreated:
           case NodeDataChanged:
           case NodeDeleted:
+          case ChildWatchRemoved:
+          case DataWatchRemoved:
           case None:
             log.info("Got unexpected zookeeper event: {} for {}", event.getType(), path);
             break;
@@ -268,6 +270,8 @@ public class DistributedWorkQueue {
           case NodeCreated:
           case NodeDataChanged:
           case NodeDeleted:
+          case ChildWatchRemoved:
+          case DataWatchRemoved:
           case None:
             log.info("Got unexpected zookeeper event: {} for {}", event.getType(), path);
             break;
