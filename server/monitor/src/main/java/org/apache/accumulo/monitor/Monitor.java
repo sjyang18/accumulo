@@ -462,8 +462,9 @@ public class Monitor extends AbstractServer implements HighlyAvailableService {
     } else {
       log.warn("Not starting log4j listener as we could not determine address to use");
     }
-
-    new Daemon(new LoggingRunnable(log, new ZooKeeperStatus(context)), "ZooKeeperStatus").start();
+    // commented out not to send 4lw to TLS-enabled zookeeper
+    // new Daemon(new LoggingRunnable(log, new ZooKeeperStatus(context)),
+    // "ZooKeeperStatus").start();
 
     // need to regularly fetch data so plot data is updated
     new Daemon(new LoggingRunnable(log, () -> {
